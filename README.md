@@ -1,8 +1,8 @@
 Blood on the Clocktower regular module for KTaNE
 
-Module and Manual by Zappyjro
+Module by Zappyjro
 
-Manual heavily improved by arktic16
+Manual by arktic16 and Zappyjro
 
 Based on Blood on the Clocktower by Steven Medway / The Pandemonium Institute.
 
