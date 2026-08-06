@@ -1,6 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UnityEngine;
+using KModkit;
 
 public class BloodOnTheClocktower : MonoBehaviour {
 	public KMAudio Audio;
@@ -144,6 +149,8 @@ public class BloodOnTheClocktower : MonoBehaviour {
 			HandleSubmit();
 			return false;
 		};
+
+		LogGrimAndSolution();
 	}
 	
 	// Update is called once per frame
@@ -159,7 +166,9 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 	private void HandleTokenPressed(int playerNumber) 
 	{
-		UnityEngine.Debug.Log("Cycled token "+playerNumber.ToString());
+		if (_isSolved) {
+			return;
+		}
 		characterButtons[playerNumber].AddInteractionPunch(0.3f);
 		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, characterButtons[playerNumber].transform);
 		switch (characterSelected[playerNumber]) 
@@ -193,7 +202,9 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 	private void HandleNamePressed(int playerNumber) 
 	{
-		UnityEngine.Debug.Log("Clicked name "+playerNumber.ToString());
+		if (_isSolved) {
+			return;
+		}
 		nameButtons[playerNumber].AddInteractionPunch(0.3f);
 		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, nameButtons[playerNumber].transform);
 		SetScrollingText(GetClaimedInfo(playerNumber));
@@ -201,9 +212,120 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 	private void HandleSubmit() 
 	{
-		UnityEngine.Debug.Log("Submit pressed");
+		if (_isSolved) {
+			return;
+		}
+		Debug.LogFormat ("[Blood On The Clocktower #{0}] Submit button pressed.", _moduleId);
 		submitButton.AddInteractionPunch(0.3f);
 		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, submitButton.transform);
+
+		int demon = -1;
+		int minion = -1;
+		string minionType = "";
+		for (int i = 0; i < characterSelected.Count; i++) 
+		{
+			switch (characterSelected [i]) 
+			{
+			case 0:
+				break;
+			case 1:
+				if (demon == -1) {
+					demon = i;
+					break;
+				} else {
+					Debug.LogFormat ("[Blood On The Clocktower #{0}] There cannot be more than 1 imp.", _moduleId);
+					SetScrollingText("There cannot be more than 1 imp.");
+					Module.HandleStrike ();
+					return;
+				}
+			case 2:
+				if (minion == -1) {
+					minion = i;
+					minionType = "poisoner";
+					break;
+				} else {
+					Debug.LogFormat ("[Blood On The Clocktower #{0}] There cannot be more than 1 minion.", _moduleId);
+					SetScrollingText("There cannot be more than 1 minion.");
+					Module.HandleStrike ();
+					return;
+				}
+			case 3:
+				if (minion == -1) {
+					minion = i;
+					minionType = "spy";
+					break;
+				} else {
+					Debug.LogFormat ("[Blood On The Clocktower #{0}] There cannot be more than 1 minion.", _moduleId);
+					SetScrollingText("There cannot be more than 1 minion.");
+					Module.HandleStrike ();
+					return;
+				}
+			case 4:
+				if (minion == -1) {
+					minion = i;
+					minionType = "baron";
+					break;
+				} else {
+					Debug.LogFormat ("[Blood On The Clocktower #{0}] There cannot be more than 1 minion.", _moduleId);
+					SetScrollingText("There cannot be more than 1 minion.");
+					Module.HandleStrike ();
+					return;
+				}
+			case 5:
+				if (minion == -1) {
+					minion = i;
+					minionType = "scarletWoman";
+					break;
+				} else {
+					Debug.LogFormat ("[Blood On The Clocktower #{0}] There cannot be more than 1 minion.", _moduleId);
+					SetScrollingText("There cannot be more than 1 minion.");
+					Module.HandleStrike ();
+					return;
+				}
+			default:
+				return;
+			}
+		}
+
+		if (demon == -1) 
+		{
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] There must be an imp.", _moduleId);
+			SetScrollingText("There must be an imp.");
+			Module.HandleStrike ();
+			return;
+		}
+		if (minion == -1) 
+		{
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] There must be a minion.", _moduleId);
+			SetScrollingText("There must be a minion.");
+			Module.HandleStrike ();
+			return;
+		}
+
+		string submittedWorld = playerNames[demon] + " is the Imp, " + playerNames[minion] + " is the " + FormatCharacterName(minionType);
+		Debug.LogFormat ("[Blood On The Clocktower #{0}] Submitted world: {1}.", _moduleId, submittedWorld);
+		var reasons = TestWorld(demon, minion, minionType);
+		if (reasons.Count == 0 || reasons [0] == "The world is valid") 
+		{
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] Correct answer submitted, solving.", _moduleId);
+			SetScrollingText ("Good wins!");
+			_isSolved = true;
+			Module.HandlePass ();
+		} 
+		else 
+		{
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] Incorrect.", _moduleId);
+			for (int i = 0; i < reasons.Count; i++) 
+			{
+				Debug.LogFormat (
+					"[Blood On The Clocktower #{0}] Reason {1}: {2}", _moduleId, i + 1, reasons[i]
+				);
+			}
+
+			string reasonText = string.Join ("                ", reasons.ToArray());
+			SetScrollingText(reasonText);
+			Module.HandleStrike ();
+		}
 	}
 
 	private int CharacterToID(string characterType)
@@ -292,8 +414,9 @@ public class BloodOnTheClocktower : MonoBehaviour {
 				string empathInfo = "";
 				foreach (var empathNumber in generatedGame.Characters[playerNumber].EmpathInfo) 
 				{
-					empathInfo = empathInfo + empathNumber.ToString() + " ";
+					empathInfo = empathInfo + empathNumber.ToString() + ", ";
 				}
+				empathInfo = empathInfo.Substring (0, empathInfo.Length - 2);
 				return empathInfo;
 			case 5: // Fortune Teller
 				string ftInfo = "";
@@ -333,10 +456,17 @@ public class BloodOnTheClocktower : MonoBehaviour {
 				}
 				else 
 				{
-					return playerNames[generatedGame.Characters[playerNumber].RavenkeeperPlayer.Value] + " " + FormatCharacterName(generatedGame.Characters[playerNumber].RavenkeeperCharacter);
+					return playerNames[generatedGame.Characters[playerNumber].RavenkeeperPlayer.Value] + " is the " + FormatCharacterName(generatedGame.Characters[playerNumber].RavenkeeperCharacter);
 				}
 			case 9: // Virgin
-			return playerNames[generatedGame.Characters[playerNumber].VirginPlayerNommed.Value]+" nominated me on day "+(generatedGame.Characters[playerNumber].VirginDayNommed.Value+1).ToString();
+				if (generatedGame.Characters [playerNumber].VirginPlayerNommed.Value == -1) 
+				{
+					return "Nobody ever nominated me";
+				} 
+				else 
+				{
+					return playerNames [generatedGame.Characters [playerNumber].VirginPlayerNommed.Value] + " nominated me on day " + (generatedGame.Characters [playerNumber].VirginDayNommed.Value + 1).ToString ();
+				}
 			case 10: // Slayer
 			return "I shot at "+playerNames[generatedGame.Characters[playerNumber].SlayerPlayerShot.Value]+" on day "+(generatedGame.Characters[playerNumber].SlayerDayShot.Value+1).ToString();
 			case 11: // Soldier
@@ -410,8 +540,59 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 				displayField.text = visibleText;
 
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.1f);
 			}
+		}
+	}
+
+	private List<string> TestWorld(int demonPlayer, int minionPlayer, string minionType)
+	{
+		generatedGame.DemonPlayer = demonPlayer;
+		generatedGame.MinionPlayer = minionPlayer;
+		generatedGame.MinonType = minionType;
+
+		return ClocktowerSolver.Solve(generatedGame).Reasons;
+	}
+
+	private void LogGrimAndSolution() 
+	{
+		Debug.LogFormat ("[Blood On The Clocktower #{0}] ----- GENERATED GRIMMOIRE -----", _moduleId);
+		Debug.LogFormat ("[Blood On The Clocktower #{0}] Players: {1}, Days: {2}", _moduleId, generatedGame.Characters.Count, generatedGame.Days);
+
+		for (int i = 0; i < generatedGame.Characters.Count; i++) 
+		{
+			CharacterDto character = generatedGame.Characters[i];
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] Player {1}: {2} | Character: {3} | Status: {4} | Information: {5}", _moduleId, i+1, playerNames[i], FormatCharacterName(character.Type), GetDeathDescription(character), GetClaimedInfo(i));
+		}
+
+		generatedGame.DemonPlayer = null;
+		generatedGame.MinonType = null;
+		generatedGame.MinonType = null;
+
+		List<string> world = ClocktowerSolver.Solve(generatedGame).ValidWorlds[0];
+		Debug.LogFormat ("[Blood On The Clocktower #{0}] ----- SOLUTION -----", _moduleId);
+		for (int i = 0; i < world.Count; i++) 
+		{
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] {1}: {2}", _moduleId, playerNames[i], FormatCharacterName(world[i]));
+		}
+	}
+
+	private string GetDeathDescription(CharacterDto character) 
+	{
+		switch (character.DeathMethod) 
+		{
+		case DeathMethod.Alive:
+			return "Alive";
+		case DeathMethod.Night:
+			return "Died on night " + (character.DeathNight + 1).ToString();
+		case DeathMethod.Execution:
+			return "Executed on day " + (character.DeathDay + 1).ToString();
+		case DeathMethod.Slayer:
+			return "Shot by the slayer on day " + (character.DeathDay + 1).ToString();
+		case DeathMethod.Virgin:
+			return "Executed by the virgin ability on day " + (character.DeathDay + 1).ToString();
+		default:
+			return "Something went wrong";
 		}
 	}
 }

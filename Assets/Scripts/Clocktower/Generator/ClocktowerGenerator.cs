@@ -467,11 +467,11 @@ public static class ClocktowerGenerator
                 }
                 break;
             case Good.Empath:
-                var myIndex = grim.IndexOf(Good.Empath);
+				var myIndex = characters.IndexOf(character);
                 var info = new List<int>();
                 int nextLiving = -1;
                 int previousLiving = -1;
-                var empathCount = character.DeathDay+1;
+                var empathCount = character.DeathDay == -1 ? -1 : character.DeathDay+1;
                 if (character.DeathNight != -1)
                 {
                     empathCount = character.DeathNight;
@@ -529,6 +529,13 @@ public static class ClocktowerGenerator
                         if (random.Next(0,10) < 9)
                         {
                             info[i] = random.Next(0,3);
+
+							if (info [i] == 2) {
+								info[i] = random.Next(0,3);
+							}
+							if (info [i] == 2) {
+								info[i] = random.Next(0,3);
+							}
                         }
                     }
                 }
