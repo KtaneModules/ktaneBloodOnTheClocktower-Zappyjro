@@ -665,7 +665,8 @@ public static class ClocktowerGenerator
                 }
                 character.UndertakerInfo = undertakerInfo;
                 break;
-            case Good.Monk:
+			case Good.Monk:
+				var monkIndex = characters.IndexOf(character);
                 var picksNeeded = character.DeathDay;
                 if (character.DeathNight != -1)
                 {
@@ -682,7 +683,7 @@ public static class ClocktowerGenerator
                     while (!validPick)
                     {
                         var pick = random.Next(0,grim.Count);
-                        if (grim[pick] != Good.Monk && (characters[pick].DeathDay > i || characters[pick].DeathNight > i || characters[pick].DeathMethod == DeathMethod.Alive))
+                        if (pick != monkIndex && (characters[pick].DeathDay > i || characters[pick].DeathNight > i || characters[pick].DeathMethod == DeathMethod.Alive))
                         {
                             validPick = true;
                             picks.Add(pick);

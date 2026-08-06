@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +27,8 @@ public class BloodOnTheClocktower : MonoBehaviour {
 	public Material[] shroudMaterials;
 	public Material[] characterIconMaterials;
 	public KMColorblindMode ColourBlindMode;
+	public Transform[] playerTokens;
+	public Transform clockHand;
 
 	private static int _moduleIdCounter = 1;
 	private int _moduleId = 0;
@@ -71,7 +73,10 @@ public class BloodOnTheClocktower : MonoBehaviour {
 		playerNames = new List<string>();
 		characterIds = new List<int>();
 		characterSelected = new List<int>();
-		while (playerNames.Count < 8) 
+
+		generatedGame = ClocktowerGenerator.Generate();
+
+		while (playerNames.Count < generatedGame.Characters.Count) 
 		{
 			var name = names[UnityEngine.Random.Range(0, names.Length)];
 			if (!playerNames.Contains(name)) 
@@ -80,11 +85,7 @@ public class BloodOnTheClocktower : MonoBehaviour {
 			}
 		}
 
-		generatedGame = ClocktowerGenerator.Generate();
-		while (generatedGame.Characters.Count != 8) 
-		{
-			generatedGame = ClocktowerGenerator.Generate();
-		}
+		ArrangeTokensInCircle();
 
 		UnityEngine.Debug.Log("Generated puzzle with " + generatedGame.Characters.Count + " players and " + generatedGame.Days + " days.");
 
@@ -409,7 +410,7 @@ public class BloodOnTheClocktower : MonoBehaviour {
 			case 2: // Investigator
 			return playerNames[generatedGame.Characters[playerNumber].InvestigatorOne.Value]+" or "+playerNames[generatedGame.Characters[playerNumber].InvestigatorTwo.Value]+" is the "+FormatCharacterName(generatedGame.Characters[playerNumber].InvestigatorCharacter);
 			case 3: // Chef
-				return generatedGame.Characters[playerNumber].ChefPairs.ToString()+" Pairs";
+				return generatedGame.Characters[playerNumber].ChefPairs.ToString()+(generatedGame.Characters[playerNumber].ChefPairs == 1 ? " Pairs" : " Pair");
 			case 4: // Empath
 				string empathInfo = "";
 				foreach (var empathNumber in generatedGame.Characters[playerNumber].EmpathInfo) 
@@ -433,21 +434,23 @@ public class BloodOnTheClocktower : MonoBehaviour {
 				string undertakerInfo = "";
 				foreach (var undertakerNight in generatedGame.Characters[playerNumber].UndertakerInfo) {
 					var info = undertakerNight;
-					if (undertakerNight == "") 
-					{
+					if (undertakerNight == "") {
 						info = "N/A";
 					}
-					undertakerInfo = undertakerInfo + FormatCharacterName(info) + ", ";
+					undertakerInfo = undertakerInfo + FormatCharacterName (info) + ", ";
 				}
-				undertakerInfo = undertakerInfo.Substring (0, undertakerInfo.Length - 2);
+				if (undertakerInfo != "") {
+					undertakerInfo = undertakerInfo.Substring (0, undertakerInfo.Length - 2);
+				}
 				return undertakerInfo;
 			case 7: // Monk
 				string monkInfo = "";
-				foreach (var monkPick in generatedGame.Characters[playerNumber].MonkPicks) 
-				{
-					monkInfo = monkInfo + playerNames[monkPick] + ", ";
+				foreach (var monkPick in generatedGame.Characters[playerNumber].MonkPicks) {
+					monkInfo = monkInfo + playerNames [monkPick] + ", ";
 				}
-				monkInfo = monkInfo.Substring (0, monkInfo.Length - 2);
+				if (monkInfo != "") {
+					monkInfo = monkInfo.Substring (0, monkInfo.Length - 2);
+				}
 				return monkInfo;
 			case 8: // Ravenkeeper
 				if (generatedGame.Characters[playerNumber].RavenkeeperPlayer == -1)
@@ -594,5 +597,54 @@ public class BloodOnTheClocktower : MonoBehaviour {
 		default:
 			return "Something went wrong";
 		}
+	}
+
+	private void ArrangeTokensInCircle()
+	{
+		const float radius = 0.054f;
+		const float startAngle = 90f;
+
+		const float handRotationOffset = -90f;
+
+		Vector3 centre = new Vector3(0f, 0f, 0f);
+
+		int youIndex = -1;
+
+		for (int i = 0; i < playerTokens.Length; i++)
+		{
+			bool active = i < generatedGame.Characters.Count;
+			playerTokens[i].gameObject.SetActive(active);
+
+			if (!active)
+				continue;
+
+			float angle = startAngle - i * (360f / generatedGame.Characters.Count);
+			float radians = angle * Mathf.Deg2Rad;
+			float height = playerTokens[i].localPosition.y;
+
+			playerTokens[i].localPosition = new Vector3(
+				centre.x + Mathf.Cos(radians) * radius,
+				height,
+				centre.z + Mathf.Sin(radians) * radius
+			);
+
+			if (generatedGame.Characters[i].IsYou)
+			{
+				youIndex = i;
+
+				float handAngle = -angle + handRotationOffset;
+
+				clockHand.localEulerAngles =
+					new Vector3(0f, handAngle, 0f);
+			}
+		}
+
+		Debug.LogFormat(
+			"[Blood On The Clocktower #{0}] You are player {1}: {2}, the {3}.",
+			_moduleId,
+			youIndex + 1,
+			playerNames[youIndex],
+			FormatCharacterName(generatedGame.Characters[youIndex].Type)
+		);
 	}
 }
