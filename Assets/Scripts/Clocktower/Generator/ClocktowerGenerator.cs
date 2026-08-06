@@ -471,7 +471,7 @@ public static class ClocktowerGenerator
                 var info = new List<int>();
                 int nextLiving = -1;
                 int previousLiving = -1;
-                var empathCount = character.DeathDay;
+                var empathCount = character.DeathDay+1;
                 if (character.DeathNight != -1)
                 {
                     empathCount = character.DeathNight;
@@ -797,7 +797,7 @@ public static class ClocktowerGenerator
                     if (!triggered)
                     {
                         var nommedBy = random.Next(0,grim.Count);
-                        while (grim[nommedBy] == Good.Virgin)
+						while (grim[nommedBy] == Good.Virgin && characters[nommedBy].DeathMethod == DeathMethod.Alive || characters[nommedBy].DeathDay >= dayNommed || characters[nommedBy].DeathNight > dayNommed)
                         {
                             nommedBy = random.Next(0,grim.Count);
                         }
