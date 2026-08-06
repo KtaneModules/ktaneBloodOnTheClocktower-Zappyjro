@@ -1,0 +1,70 @@
+{
+  "Days": 3,
+  "Characters": [
+    {
+      "Type": "recluse",
+      "DeathDay": 0,
+      "DeathNight": -1,
+      "DeathMethod": 1,
+      "IsYou": false
+    },
+    {
+      "Type": "virgin",
+      "DeathDay": -1,
+      "DeathNight": -1,
+      "DeathMethod": 0,
+      "IsYou": false,
+      "VirginDayNommed": 2,
+      "VirginPlayerNommed": 3
+    },
+    {
+      "Type": "soldier",
+      "DeathDay": -1,
+      "DeathNight": 2,
+      "DeathMethod": 2,
+      "IsYou": false
+    },
+    {
+      "Type": "slayer",
+      "DeathDay": -1,
+      "DeathNight": -1,
+      "DeathMethod": 0,
+      "IsYou": true,
+      "SlayerPlayerShot": 4,
+      "SlayerDayShot": 1
+    },
+    {
+      "Type": "recluse",
+      "DeathDay": 1,
+      "DeathNight": -1,
+      "DeathMethod": 3,
+      "IsYou": false
+    },
+    {
+      "Type": "butler",
+      "DeathDay": -1,
+      "DeathNight": 1,
+      "DeathMethod": 2,
+      "IsYou": false
+    },
+    {
+      "Type": "empath",
+      "DeathDay": -1,
+      "DeathNight": -1,
+      "DeathMethod": 0,
+      "IsYou": false,
+      "EmpathInfo": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "Type": "mayor",
+      "DeathDay": -1,
+      "DeathNight": -1,
+      "DeathMethod": 0,
+      "IsYou": false
+    }
+  ]
+}
