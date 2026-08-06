@@ -11,10 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: bagSearch
-  title: Bag Search
+  id: bloodOnTheClocktower
+  title: Blood on the Clocktower
   author: Zappyjro
-  description: "Search through 3 bags ensuring the follow a peculiar\r set of rules."
+  description: Solve a game of Blood on the Clocktower by deducing which players are
+    lying about what characters they are.
   version: 1.0
   outputFolder: build
   previewImage: {fileID: 0}

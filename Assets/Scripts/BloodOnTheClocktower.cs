@@ -29,6 +29,9 @@ public class BloodOnTheClocktower : MonoBehaviour {
 	public KMColorblindMode ColourBlindMode;
 	public Transform[] playerTokens;
 	public Transform clockHand;
+	public Transform displayLeftLimit;
+	public Transform displayRightLimit;
+	public Renderer displayBoxRenderer;
 
 	private static int _moduleIdCounter = 1;
 	private int _moduleId = 0;
@@ -487,63 +490,90 @@ public class BloodOnTheClocktower : MonoBehaviour {
 		}
 	}
 
-	private void SetScrollingText(string text) 
+	private void SetScrollingText(string text)
 	{
-		const float maxWidth = 0.097f;
-		if (displayScroller != null) 
+		if (displayScroller != null)
 		{
-			StopCoroutine (displayScroller);
+			StopCoroutine(displayScroller);
 			displayScroller = null;
 		}
 
-		if (GetTextWidth(text) <= maxWidth) 
+		float maxWidth = GetMaximumTextWidth();
+
+		if (GetTextWidth(text) <= maxWidth)
 		{
 			displayField.text = text;
 			return;
 		}
 
-		displayScroller = StartCoroutine (
-			ScrollText(text, maxWidth)
-		);
+		displayScroller = StartCoroutine(ScrollText(text));
 	}
 
-	private float GetTextWidth(string text) 
+	private float GetDisplayWidth()
+	{
+		Vector3 leftLocal =
+			displayField.transform.InverseTransformPoint(displayLeftLimit.position);
+
+		Vector3 rightLocal =
+			displayField.transform.InverseTransformPoint(displayRightLimit.position);
+
+		return Mathf.Abs(rightLocal.x - leftLocal.x);
+	}
+
+	private float GetMaximumTextWidth()
+	{
+		return displayBoxRenderer.bounds.size.x * 0.98f;
+	}
+
+	private float GetTextWidth(string text)
 	{
 		string originalText = displayField.text;
+
 		displayField.text = text;
 
-		float width = displayField.GetComponent<Renderer> ().bounds.size.x;
+		Physics.SyncTransforms();
+
+		float width = displayField.GetComponent<Renderer>().bounds.size.x;
 
 		displayField.text = originalText;
+		Physics.SyncTransforms();
+
 		return width;
 	}
 
-	private IEnumerator ScrollText(string text, float maxWidth) 
+	private IEnumerator ScrollText(string text)
 	{
-		string scrollingText = text + "                ";
+		const string gap = "        ";
 
-		while (true) 
+		string scrollingText = text + gap;
+		string repeatedText = scrollingText + scrollingText;
+
+		while (true)
 		{
-			for (int i = 0; i < scrollingText.Length; i++) 
+			for (int start = 0; start < scrollingText.Length; start++)
 			{
-				string repeatedText = scrollingText + scrollingText;
+				float maxWidth = GetMaximumTextWidth();
 				string visibleText = "";
 
-				for (int j = 0; i + j <= repeatedText.Length; j++) 
+				for (int length = 1;
+					start + length <= repeatedText.Length;
+					length++)
 				{
-					string candidate = repeatedText.Substring (i, j);
+					string candidate =
+						repeatedText.Substring(start, length);
 
-					if (GetTextWidth (candidate) > maxWidth) 
-					{
+					if (GetTextWidth(candidate) > maxWidth)
 						break;
-					}
 
 					visibleText = candidate;
 				}
 
+				if (visibleText.Length == 0)
+					visibleText = repeatedText.Substring(start, 1);
+
 				displayField.text = visibleText;
 
-				yield return new WaitForSeconds(0.1f);
+				yield return new WaitForSeconds(0.06f);
 			}
 		}
 	}
@@ -565,7 +595,7 @@ public class BloodOnTheClocktower : MonoBehaviour {
 		for (int i = 0; i < generatedGame.Characters.Count; i++) 
 		{
 			CharacterDto character = generatedGame.Characters[i];
-			Debug.LogFormat ("[Blood On The Clocktower #{0}] Player {1}: {2} | Character: {3} | Status: {4} | Information: {5}", _moduleId, i+1, playerNames[i], FormatCharacterName(character.Type), GetDeathDescription(character), GetClaimedInfo(i));
+			Debug.LogFormat ("[Blood On The Clocktower #{0}] Player {1}: {2} | Character: {3} | Status: {4} | Information: {5} | Is You?: {6}", _moduleId, i+1, playerNames[i], FormatCharacterName(character.Type), GetDeathDescription(character), GetClaimedInfo(i), (character.IsYou ? "Yes" : "No"));
 		}
 
 		generatedGame.DemonPlayer = null;
@@ -608,8 +638,6 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 		Vector3 centre = new Vector3(0f, 0f, 0f);
 
-		int youIndex = -1;
-
 		for (int i = 0; i < playerTokens.Length; i++)
 		{
 			bool active = i < generatedGame.Characters.Count;
@@ -630,21 +658,11 @@ public class BloodOnTheClocktower : MonoBehaviour {
 
 			if (generatedGame.Characters[i].IsYou)
 			{
-				youIndex = i;
-
 				float handAngle = -angle + handRotationOffset;
 
 				clockHand.localEulerAngles =
 					new Vector3(0f, handAngle, 0f);
 			}
 		}
-
-		Debug.LogFormat(
-			"[Blood On The Clocktower #{0}] You are player {1}: {2}, the {3}.",
-			_moduleId,
-			youIndex + 1,
-			playerNames[youIndex],
-			FormatCharacterName(generatedGame.Characters[youIndex].Type)
-		);
 	}
 }
