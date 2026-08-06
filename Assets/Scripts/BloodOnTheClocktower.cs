@@ -413,7 +413,7 @@ public class BloodOnTheClocktower : MonoBehaviour {
 			case 2: // Investigator
 			return playerNames[generatedGame.Characters[playerNumber].InvestigatorOne.Value]+" or "+playerNames[generatedGame.Characters[playerNumber].InvestigatorTwo.Value]+" is the "+FormatCharacterName(generatedGame.Characters[playerNumber].InvestigatorCharacter);
 			case 3: // Chef
-				return generatedGame.Characters[playerNumber].ChefPairs.ToString()+(generatedGame.Characters[playerNumber].ChefPairs == 1 ? " Pairs" : " Pair");
+				return generatedGame.Characters[playerNumber].ChefPairs.ToString()+(generatedGame.Characters[playerNumber].ChefPairs == 1 ? " Pair" : " Pairs");
 			case 4: // Empath
 				string empathInfo = "";
 				foreach (var empathNumber in generatedGame.Characters[playerNumber].EmpathInfo) 
