@@ -155,6 +155,11 @@ public static class ClocktowerGenerator
                 Days = days,
             };
 
+            if (random.Next(0,15) > 0 && characters.Any(s => s.Type == "saint" && s.DeathDay != -1))
+            {
+                continue;
+            }
+
             SolverResult solverResult = ClocktowerSolver.Solve(gameDto);
             if (solverResult.HasExactlyOneWorld)
             {
