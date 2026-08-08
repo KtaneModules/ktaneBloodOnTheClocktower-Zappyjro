@@ -14,8 +14,14 @@ MonoBehaviour:
   id: bloodOnTheClocktower
   title: Blood on the Clocktower
   author: Zappyjro
-  description: Solve a game of Blood on the Clocktower by deducing which players are
-    lying about what characters they are.
+  description: 'Solve a game of Blood on the Clocktower by deducing which players
+    are lying about what characters they are.
+
+
+    Manual by arktic16 and myself.
+
+
+    https://ktane.timwi.de/HTML/Blood%20On%20The%20Clocktower.html'
   version: 1.0
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: c7cfbfe09ed10ba4ea10145044d1ccbb, type: 3}

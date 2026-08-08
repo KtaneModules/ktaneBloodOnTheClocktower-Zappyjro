@@ -665,4 +665,41 @@ public class BloodOnTheClocktower : MonoBehaviour {
 			}
 		}
 	}
+
+	private readonly string TwitchHelpMessage =
+		@"Tokens are numbered 1 at the top and advancing clockwise, use '!{0} 1 info' to view player 1's information, use '!{0} 1 token' to advance player 1's token and use '!{0} submit' to submit";
+
+	private IEnumerator ProcessTwitchCommand(string command)
+	{
+		command = command.ToLowerInvariant().Trim();
+
+		if (command == "submit")
+		{
+			yield return null;
+			HandleSubmit();
+			yield break;
+		}
+
+		string[] parts = command.Split(' ');
+
+		if (parts.Length != 2)
+			yield break;
+
+		int number;
+		if (!int.TryParse(parts[0], out number))
+			yield break;
+
+		number--;
+
+		if (parts[1] == "info")
+		{
+			yield return null;
+			HandleNamePressed(number);
+		}
+		else if (parts[1] == "token")
+		{
+			yield return null;
+			HandleTokenPressed(number);
+		}
+	}
 }
