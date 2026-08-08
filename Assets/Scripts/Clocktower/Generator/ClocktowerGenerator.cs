@@ -604,7 +604,7 @@ public static class ClocktowerGenerator
                                 undertakerToday = GetID((Good)random.Next(0,16));
                             }
                         }
-                        else if (undertakerToday == "recluse")
+                        else if (undertakerToday == "recluse" || undertakerToday == "minion")
                         {
                             switch (random.Next(0,5))
                             {
