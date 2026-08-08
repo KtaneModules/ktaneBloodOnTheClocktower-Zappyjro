@@ -677,6 +677,7 @@ public static class ClocktowerSolver
                         world[i].CharacterId == "spy" ||
                         world[i].CharacterId == "poisoner" ||
                         world[i].CharacterId == "scarletWoman" ||
+                        world[i].DeathMethod == DeathMethod.Virgin ||
                         ftInfo != null)
                     {
                         continue;
