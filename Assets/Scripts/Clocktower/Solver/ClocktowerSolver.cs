@@ -505,7 +505,7 @@ public static class ClocktowerSolver
 
             if (nightValues.Any(x => x > 1))
             {
-                reasons.Add("This has "+nightValues.First(n => n > 0)+" players receiving misinformation on night "+(nightValues.IndexOf(nightValues.First(n => n > 0))+1)+". At most 1 of them can be poisoned");
+                reasons.Add("This has "+nightValues.First(n => n > 1)+" players receiving misinformation on night "+(nightValues.IndexOf(nightValues.First(n => n > 1))+1)+". At most 1 of them can be poisoned");
                 return false;
             }
 
@@ -680,6 +680,7 @@ public static class ClocktowerSolver
                         world[i].DeathMethod == DeathMethod.Virgin ||
                         ftInfo != null)
                     {
+						comboFound = ftInfo != null;
                         continue;
                     }
 

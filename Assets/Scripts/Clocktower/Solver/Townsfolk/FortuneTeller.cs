@@ -62,8 +62,8 @@ namespace ClocktowerSolverTB.Townsfolk
                         misinfoDays.Add(!results[i]);
                     }
                     else if (dayDied && 
-                        grim[playersChosen[i][0]].CharacterId == "scarletWoman" || 
-                        grim[playersChosen[i][1]].CharacterId == "scarletWoman")
+                        (grim[playersChosen[i][0]].CharacterId == "scarletWoman" || 
+						grim[playersChosen[i][1]].CharacterId == "scarletWoman"))
                     {
                         misinfoDays.Add(!results[i]);
                     }
