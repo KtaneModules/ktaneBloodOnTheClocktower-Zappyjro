@@ -810,7 +810,7 @@ public static class ClocktowerGenerator
                     if (!triggered)
                     {
                         var nommedBy = random.Next(0,grim.Count);
-						while (grim[nommedBy] == Good.Virgin && characters[nommedBy].DeathMethod == DeathMethod.Alive || characters[nommedBy].DeathDay >= dayNommed || characters[nommedBy].DeathNight > dayNommed)
+						while (grim[nommedBy] == Good.Virgin || (characters[nommedBy].DeathMethod != DeathMethod.Alive && characters[nommedBy].DeathDay <= dayNommed && characters[nommedBy].DeathNight < dayNommed))
                         {
                             nommedBy = random.Next(0,grim.Count);
                         }
