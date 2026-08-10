@@ -97,7 +97,7 @@ namespace ClocktowerSolverTB.Townsfolk
             }
             else
             {
-                return (!(evils.Contains(nextLiving) || maybeEvils.Contains(nextLiving)) && (evils.Contains(previousLiving) || maybeEvils.Contains(previousLiving)));
+                return !((evils.Contains(nextLiving) || maybeEvils.Contains(nextLiving)) && (evils.Contains(previousLiving) || maybeEvils.Contains(previousLiving)));
             }
         }
     }
