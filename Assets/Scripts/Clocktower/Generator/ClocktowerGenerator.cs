@@ -160,6 +160,11 @@ public static class ClocktowerGenerator
                 continue;
             }
 
+            if (characters.Any(s => s.Type == "virgin" && s.DeathMethod != DeathMethod.Execution && s.VirginPlayerNommed == -1))
+            {
+                continue;
+            }
+
             SolverResult solverResult = ClocktowerSolver.Solve(gameDto);
             if (solverResult.HasExactlyOneWorld)
             {
