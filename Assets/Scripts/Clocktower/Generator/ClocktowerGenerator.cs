@@ -160,7 +160,7 @@ public static class ClocktowerGenerator
                 continue;
             }
 
-            if (characters.Any(s => s.Type == "virgin" && s.DeathMethod != DeathMethod.Execution && s.VirginPlayerNommed == -1))
+            if (characters.Any(s => s.Type == "virgin" && s.DeathMethod == DeathMethod.Execution && s.VirginPlayerNommed == -1))
             {
                 continue;
             }
