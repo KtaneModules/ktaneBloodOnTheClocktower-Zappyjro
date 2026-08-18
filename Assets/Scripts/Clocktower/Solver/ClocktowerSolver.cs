@@ -430,6 +430,11 @@ public static class ClocktowerSolver
                 } 
                 if (!drunkCandidateFound)
                 {
+                    if (ftInfo != null)
+                    {
+                        drunkCandidateFound = true; // Janky workaround
+                    }
+                    
                     for (int i = 0; i < world.Count; i++)
                     {
                         if (((world[i].CharacterId == "slayer" && !world.Any(w => w.DeathMethod == DeathMethod.Slayer)) || 
