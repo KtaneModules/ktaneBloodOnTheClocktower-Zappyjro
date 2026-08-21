@@ -347,132 +347,108 @@ public static class ClocktowerSolver
                 }
             }
 
-            if (failedCharacters == 0)
-            {
-                var drunkCandidateFound = false;
-                for (int i = 0; i < world.Count; i++)
-                {
-                    if (librarianSawDrunk && libInfo1 != i && libInfo2 != i && world[i].CharacterId != "librarian")
-                    {
-                        if (world[libInfo1].CharacterId != "spy" && world[libInfo2].CharacterId != "spy")
-                        {
-                            continue;
-                        }
-                    }
+			if (failedCharacters == 0) {
+				var drunkCandidateFound = false;
+				if (world.Any (s => s.CharacterId == "drunk")) {
+					drunkCandidateFound = true;
+				}
 
-                    if (undertakerConf.Contains(i) && world[i].CharacterId != "undertaker")
-                    {
-                        continue;
-                    }
+				for (int i = 0; i < world.Count; i++) {
+					if (librarianSawDrunk && libInfo1 != i && libInfo2 != i && world [i].CharacterId != "librarian") {
+						if (world [libInfo1].CharacterId != "spy" && world [libInfo2].CharacterId != "spy") {
+							continue;
+						}
+					}
 
-                    if (undertakerSawDrunk)
-                    {
-                        var underDrunk = -1;
-                        foreach (int[] pair in undertakeDrunkNights)
-                        {
-                            if (world[pair[0]].CharacterId != "spy")
-                            {
-                                if (underDrunk == -1)
-                                {
-                                    underDrunk = pair[0];
-                                }
-                                else
-                                {
-                                    underDrunk = -2;
-                                }
-                            }
-                        }
+					if (undertakerConf.Contains (i) && world [i].CharacterId != "undertaker") {
+						continue;
+					}
 
-                        if (underDrunk == -2)
-                        {
-                            if (world[i].CharacterId != "undertaker")
-                            {
-                                continue;
-                            }
-                        }
-                        else if (underDrunk != -1 && underDrunk != i && world[i].CharacterId != "undertaker")
-                        {
-                            continue;
-                        }
-                    }
+					if (undertakerSawDrunk) {
+						var underDrunk = -1;
+						foreach (int[] pair in undertakeDrunkNights) {
+							if (world [pair [0]].CharacterId != "spy") {
+								if (underDrunk == -1) {
+									underDrunk = pair [0];
+								} else {
+									underDrunk = -2;
+								}
+							}
+						}
 
-                    if (ravenDrunkPlayer != i && ravenDrunkPlayer != -1 && world[i].CharacterId != "ravenkeeper")
-                    {
-                        continue;
-                    }
+						if (underDrunk == -2) {
+							if (world [i].CharacterId != "undertaker") {
+								continue;
+							}
+						} else if (underDrunk != -1 && underDrunk != i && world [i].CharacterId != "undertaker") {
+							continue;
+						}
+					}
 
-                    if (washSeenSide == 0 && world[i].CharacterId != "washerwoman" && i == washInfo1)
-                    {
-                        continue;
-                    }
-                    if (washSeenSide == 1 && world[i].CharacterId != "washerwoman" && i == washInfo2)
-                    {
-                        continue;
-                    }
+					if (ravenDrunkPlayer != i && ravenDrunkPlayer != -1 && world [i].CharacterId != "ravenkeeper") {
+						continue;
+					}
 
-                    if (world[i].CharacterId != "imp" &&
-                        world[i].CharacterId != "spy" &&
-                        world[i].CharacterId != "baron" &&
-                        world[i].CharacterId != "poisoner" &&
-                        world[i].CharacterId != "scarletWoman" &&
-                        world[i].CharacterId != "recluse" &&
-                        world[i].CharacterId != "saint" &&
-                        world[i].CharacterId != "butler" &&
-                        world[i].CharacterId != "slayer" &&
-                        world[i].CharacterId != "virgin" &&
-                        world[i].DeathMethod != DeathMethod.Virgin &&
-                        ftInfo == null)
-                    {
-                        world[i] = new Drunk(world[i].DeathDay, world[i].DeathNight, world[i].DeathMethod, world[i].IsYou);
-                        drunkCandidateFound = true;
-                        break;
-                    }
-                } 
-                if (!drunkCandidateFound)
-                {
-                    if (ftInfo != null)
-                    {
-                        drunkCandidateFound = true; // Janky workaround
-                    }
-                    
-                    for (int i = 0; i < world.Count; i++)
-                    {
-                        if (((world[i].CharacterId == "slayer" && !world.Any(w => w.DeathMethod == DeathMethod.Slayer)) || 
-                            (world[i].CharacterId == "virgin" && !world.Any(w => w.DeathMethod == DeathMethod.Virgin))) &&
-                            world[i].DeathMethod != DeathMethod.Virgin)
-                        {
-                            if (librarianSawDrunk && libInfo1 != i && libInfo2 != i)
-                            {
-                                continue;
-                            }
+					if (washSeenSide == 0 && world [i].CharacterId != "washerwoman" && i == washInfo1) {
+						continue;
+					}
+					if (washSeenSide == 1 && world [i].CharacterId != "washerwoman" && i == washInfo2) {
+						continue;
+					}
 
-                            if (undertakerConf.Contains(i))
-                            {
-                                continue;
-                            }
+					if (world [i].CharacterId != "imp" &&
+					                   world [i].CharacterId != "spy" &&
+					                   world [i].CharacterId != "baron" &&
+					                   world [i].CharacterId != "poisoner" &&
+					                   world [i].CharacterId != "scarletWoman" &&
+					                   world [i].CharacterId != "recluse" &&
+					                   world [i].CharacterId != "saint" &&
+					                   world [i].CharacterId != "butler" &&
+					                   world [i].CharacterId != "slayer" &&
+					                   world [i].CharacterId != "virgin" &&
+					                   world [i].DeathMethod != DeathMethod.Virgin &&
+					                   ftInfo == null) {
+						world [i] = new Drunk (world [i].DeathDay, world [i].DeathNight, world [i].DeathMethod, world [i].IsYou);
+						drunkCandidateFound = true;
+						break;
+					}
+				} 
+				if (!drunkCandidateFound) {
+					for (int i = 0; i < world.Count; i++) {
+						if (((world [i].CharacterId == "slayer" && !world.Any (w => w.DeathMethod == DeathMethod.Slayer)) ||
+						                      (world [i].CharacterId == "virgin" && !world.Any (w => w.DeathMethod == DeathMethod.Virgin))) &&
+						                      world [i].DeathMethod != DeathMethod.Virgin) {
+							if (librarianSawDrunk && libInfo1 != i && libInfo2 != i) {
+								continue;
+							}
 
-                            if (ravenDrunkPlayer == i)
-                            {
-                                continue;
-                            }
+							if (undertakerConf.Contains (i)) {
+								continue;
+							}
 
-                            if (ftInfo != null)
-                            {
-                                continue;
-                            }
+							if (ravenDrunkPlayer == i) {
+								continue;
+							}
 
-                            world[i] = new Drunk(world[i].DeathDay, world[i].DeathNight, world[i].DeathMethod, world[i].IsYou);
-                            drunkCandidateFound = true;
-                            break;
-                        }
-                    } 
-                }
-                if (!drunkCandidateFound)
-                {
-                    reasons.Add("Due to outsider count there must be a drunk in, however there are no valid candidates for this to be.");
-                    return false;
-                }
-            }
+							if (ftInfo != null) {
+								continue;
+							}
+
+							world [i] = new Drunk (world [i].DeathDay, world [i].DeathNight, world [i].DeathMethod, world [i].IsYou);
+							drunkCandidateFound = true;
+							break;
+						}
+					} 
+				}
+				if (!drunkCandidateFound) {
+					reasons.Add ("Due to outsider count there must be a drunk in, however there are no valid candidates for this to be.");
+					return false;
+				}
+			} 
+			else if (failedCharacters == 1 && ftInfo != null) 
+			{
+				return false;
+			}
             else if (failedCharacters > 1)
             {
                 reasons.Add("This has a drunk and no poisoner, yet there is more than 1 player with incorrect information");
